@@ -55,8 +55,9 @@ class printer:
             try:
                 data = json.loads(msg.payload.decode())
                 self._update_printer_state(data)
+                print(f"### Printer recived: {data}")
             except json.JSONDecodeError:
-                logging.error("Failed to decode printer message")
+                logging.error("### Failed to decode printer message")
 
         self.client.on_connect = on_connect
         self.client.on_message = on_message
