@@ -22,11 +22,12 @@ class printer:
     def _initialize_variables(self):
         """Initialize printer state variables."""
         self.printer_data = {}
+        self.first_message_received = False
         self.bed_temp = None
         self.extruder_temp = None
         self.aux_fan = None
         self.task = None
-        self.light = None
+        self.light_state = None
     
     def _setup_mqtt_client(self, client_id: str, username: str, password: str):
         """Set up MQTT client with SSL."""
@@ -76,22 +77,34 @@ class printer:
             self.task = self.printer_data['print'].get('mc_print_sub_stage')
 
         if 'system' in data:
-            self.light = self.printer_data['system'].get('led_mode')
+            self.light_state = self.printer_data['system'].get('led_mode')    
+        self.first_message_received = True
+    
     
     def _connect_printer(self, port: int):
         """Establish connection to printer."""
         self.client.connect(self.printer_ip, port, keepalive=60)
         self.client.loop_start()
         time.sleep(2)  # Allow time for connection
-    
+        while not self.first_message_received:
+            print("Waiting for first message...")
+            time.sleep(1)
     ################## Printer functions ##################
     ################## Printer functions ##################
 
-    def set_bed_temp(self, temp):
+    def heat_bed_temp(self, temp):
+        self.send_qcode(f"M140 S{temp}")
+        self.bed_temperature(">", temp)
+    
+    def heat_extruder_temp(self, temp):
+        self.send_qcode(f"M104 S{temp}")
+        self.extruder_temperature(">", temp)
+    
+    def coll_bed_temp(self, temp):
         self.send_qcode(f"M140 S{temp}")
         self.bed_temperature("<", temp)
     
-    def set_extruder_temp(self, temp):
+    def coll_extruder_temp(self, temp):
         self.send_qcode(f"M104 S{temp}")
         self.extruder_temperature("<", temp)
 
@@ -105,27 +118,27 @@ class printer:
                 self.send_qcode(line)
         time.sleep(100)
 
-    def bed_temperature(self, operator = "<", temperature = 35):
-        if operator == "<":
-            while self.bed_temp < temperature:
-                print(f"Bed Temp: {self.bed_temp} < {temperature}")
+    def bed_temperature(self, operator = ">", temperature = 35):
+        if operator == ">":
+            while self.bed_temp < temperature - 2:
                 time.sleep(5)
-        elif operator == ">":
-            while self.bed_temp > temperature:
+                print(f"Bed Temp: {self.bed_temp} < {temperature}")
+        elif operator == "<":
+            while self.bed_temp > temperature + 2:
+                time.sleep(5)
                 print(f"Bed Temp: {self.bed_temp} > {temperature}")
-                time.sleep(30)
         else:
             print("Invalid operator")
     
-    def extruder_temperature(self, operator = "<", temperature = 50):
-        if operator == "<":
-            while self.extruder_temp < temperature:
-                print(f"Hotend Temp: {self.extruder_temp} < {temperature}")
+    def extruder_temperature(self, operator = ">", temperature = 50):
+        if operator == ">":
+            while self.extruder_temp < temperature - 2:
                 time.sleep(5)
-        elif operator == ">":
-            while self.extruder_temp > temperature:
+                print(f"Hotend Temp: {self.extruder_temp} < {temperature}")
+        elif operator == "<":
+            while self.extruder_temp > temperature + 2:
+                time.sleep(5)
                 print(f"Hotend Temp: {self.extruder_temp} > {temperature}")
-                time.sleep(30)
         else:
             print("Invalid operator")
 
