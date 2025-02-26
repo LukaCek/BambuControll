@@ -92,24 +92,9 @@ class printer:
     ################## Printer functions ##################
     ################## Printer functions ##################
 
-    def heat_bed_temp(self, temp):
-        self.send_qcode(f"M140 S{temp}")
-        self.bed_temperature(">", temp)
-    
-    def heat_extruder_temp(self, temp):
-        self.send_qcode(f"M104 S{temp}")
-        self.extruder_temperature(">", temp)
-    
-    def coll_bed_temp(self, temp):
-        self.send_qcode(f"M140 S{temp}")
-        self.bed_temperature("<", temp)
-    
-    def coll_extruder_temp(self, temp):
-        self.send_qcode(f"M104 S{temp}")
-        self.extruder_temperature("<", temp)
-
     def push(self, filename = "push.gcode", under_temperature = 30):
-        self.bed_temperature(">", under_temperature)
+        self.set_bed_temperature(under_temperature, white=True, state="less")
+        self.set_bed_temperature(0)
         with open(filename, "r") as file:
             for line in file:
                 if line.strip() == "done":
@@ -117,30 +102,6 @@ class printer:
                 print(f"Sending: {line.strip()}")
                 self.send_qcode(line)
         time.sleep(100)
-
-    def bed_temperature(self, operator = ">", temperature = 35):
-        if operator == ">":
-            while self.bed_temp < temperature - 2:
-                time.sleep(5)
-                print(f"Bed Temp: {self.bed_temp} < {temperature}")
-        elif operator == "<":
-            while self.bed_temp > temperature + 2:
-                time.sleep(5)
-                print(f"Bed Temp: {self.bed_temp} > {temperature}")
-        else:
-            print("Invalid operator")
-    
-    def extruder_temperature(self, operator = ">", temperature = 50):
-        if operator == ">":
-            while self.extruder_temp < temperature - 2:
-                time.sleep(5)
-                print(f"Hotend Temp: {self.extruder_temp} < {temperature}")
-        elif operator == "<":
-            while self.extruder_temp > temperature + 2:
-                time.sleep(5)
-                print(f"Hotend Temp: {self.extruder_temp} > {temperature}")
-        else:
-            print("Invalid operator")
 
     def wait_to_finish(self):
         while self.task == 0:
@@ -153,6 +114,68 @@ class printer:
             time.sleep(.1)
             print(".", end="")
         print("")
+
+    def set_extruder_temperature(self, temperature, white=False, state="exect"):
+        """
+        Set the extruder temperature to the given value.
+        
+        Args:
+            temperature (int): The target temperature.
+            white (bool, optional): If True, wait until the actual temperature is within 2 degrees of the target temperature. Defaults to False.
+            state (str, optional): The state to wait for. Can be "exect", "more", or "less". Defaults to "exect".
+        """
+        self.send_qcode(f"M104 S{temperature}")
+        print(f"Hotend Temp set to: {temperature}")
+        while self.extruder_temp == None:
+            print("Whating to recive temperature!")
+            time.sleep(2)
+        if white:
+            if state == "exect":
+                while self.extruder_temp < temperature - 2 or self.extruder_temp > temperature + 2:
+                    print(f"Hotend Temp: {self.extruder_temp} ==> {temperature}")
+                    time.sleep(2)
+                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+            elif state == "more":
+                while self.extruder_temp < temperature - 2:
+                    print(f"Hotend Temp: {self.extruder_temp} < {temperature}")
+                    time.sleep(2)
+                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+            elif state == "less":
+                while self.extruder_temp > temperature + 2:
+                    print(f"Hotend Temp: {self.extruder_temp} > {temperature}")
+                    time.sleep(2)
+                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+    
+    def set_bed_temperature(self, temperature, white=False, state="exect"):
+        """
+        Set the bed temperature to the given value.
+        
+        Args:
+            temperature (int): The target temperature.
+            white (bool, optional): If True, wait until the actual temperature is within 2 degrees of the target temperature. Defaults to False.
+            state (str, optional): The state to wait for. Can be "exect", "more", or "less". Defaults to "exect".
+        """
+        self.send_qcode(f"M140 S{temperature}")
+        print(f"Bed Temp set to: {temperature}")
+        while self.bed_temp == None:
+            print("Whating to recive temperature!")
+            time.sleep(2)
+        if white:
+            if state == "exect":
+                while self.bed_temp < temperature - 2 or self.bed_temp > temperature + 2:
+                    print(f"Bed Temp: {self.bed_temp} ==> {temperature}")
+                    time.sleep(2)
+                print(f"Bed Temp: {self.bed_temp} == {temperature}")
+            elif state == "more":
+                while self.bed_temp < temperature - 2:
+                    print(f"Bed Temp: {self.bed_temp} < {temperature}")
+                    time.sleep(2)
+                print(f"Bed Temp: {self.bed_temp} == {temperature}")
+            elif state == "less":
+                while self.bed_temp > temperature + 2:
+                    print(f"Bed Temp: {self.bed_temp} > {temperature}")
+                    time.sleep(2)
+                print(f"Bed Temp: {self.bed_temp} == {temperature}")
 
     def light(self, state = "on"):
         command_dict = {
