@@ -15,9 +15,10 @@ from bambucontroll import Printer
 
 # Connect to printer
 printer = Printer(
-    ip_address="192.168.1.100",
+    ip="192.168.1.100",
     printer_id="01P00A000000000",
-    access_code="12341234")
+    password="12341234"
+    )
 
 # Get current status
 status = printer.state.printer_data
