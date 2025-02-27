@@ -15,19 +15,20 @@ class printer:
         self.client_id = client_id
         self.username = username
         self.password = password
+        self.debug = False
         self._setup_mqtt_client(self.client_id, self.username, self.password)
-        self._initialize_variables()
         self._connect_printer(port)
     
-    def _initialize_variables(self):
-        """Initialize printer state variables."""
-        self.printer_data = {}
-        self.first_message_received = False
-        self.bed_temp = None
-        self.extruder_temp = None
-        self.aux_fan = None
-        self.task = None
-        self.light_state = None
+    class state:
+        printer_data = {}
+        first_message_received = False
+        bed_temp = None
+        extruder_temp = None
+        aux_fan_speed = None
+        chamber_fan_speed = None
+        cooling_fan_speed = None
+        task = None
+        light = None
     
     def _setup_mqtt_client(self, client_id: str, username: str, password: str):
         """Set up MQTT client with SSL."""
@@ -65,20 +66,25 @@ class printer:
     def _update_printer_state(self, data: dict[str, Any]):
         """Update internal printer state from MQTT message."""
         for category, values in data.items():
-            if category not in self.printer_data:
-                self.printer_data[category] = {}
-            self.printer_data[category].update(values)
-            self.printer_data[category]['last_updated'] = time.time()
+            if category not in self.state.printer_data:
+                self.state.printer_data[category] = {}
+            self.state.printer_data[category].update(values)
+            self.state.printer_data[category]['last_updated'] = time.time()
 
         if 'print' in data:
-            self.bed_temp = self.printer_data['print'].get('bed_temper')
-            self.extruder_temp = self.printer_data['print'].get('nozzle_temper')
-            self.aux_fan = self.printer_data['print'].get('big_fan1_speed')
-            self.task = self.printer_data['print'].get('mc_print_sub_stage')
+            self.state.bed_temp = self.state.printer_data['print'].get('bed_temper')
+            self.state.extruder_temp = self.state.printer_data['print'].get('nozzle_temper')
+            self.state.aux_fan_speed = self.state.printer_data['print'].get('big_fan1_speed')
+            self.state.task = self.state.printer_data['print'].get('mc_print_sub_stage')
+            self.state.chamber_fan_speed = self.state.printer_data['print'].get('big_fan2_speed')
+            self.state.cooling_fan_speed = self.state.printer_data['print'].get('cooling_fan_speed')
 
         if 'system' in data:
-            self.light_state = self.printer_data['system'].get('led_mode')    
-        self.first_message_received = True
+            self.state.light = self.state.printer_data['system'].get('led_mode')    
+        self.state.first_message_received = True
+
+        if self.debug:
+            print(f"### Recived from printer: {data}")
     
     
     def _connect_printer(self, port: int):
@@ -86,9 +92,10 @@ class printer:
         self.client.connect(self.printer_ip, port, keepalive=60)
         self.client.loop_start()
         time.sleep(2)  # Allow time for connection
-        while not self.first_message_received:
+        while not self.state.first_message_received:
             print("Waiting for first message...")
             time.sleep(1)
+        print("First message received!")
     ################## Printer functions ##################
     ################## Printer functions ##################
 
@@ -104,12 +111,12 @@ class printer:
         time.sleep(100)
 
     def wait_to_finish(self):
-        while self.task == 0:
+        while self.state.task == 0:
             time.sleep(.1)
         
         print(self, "Waiting for printer to finish", end="")
         while True:
-            if self.task == 0:
+            if self.state.task == 0:
                 break
             time.sleep(.1)
             print(".", end="")
@@ -126,25 +133,25 @@ class printer:
         """
         self.send_qcode(f"M104 S{temperature}")
         print(f"Hotend Temp set to: {temperature}")
-        while self.extruder_temp == None:
+        while self.state.extruder_temp == None:
             print("Whating to recive temperature!")
             time.sleep(2)
         if white:
             if state == "exect":
-                while self.extruder_temp < temperature - 2 or self.extruder_temp > temperature + 2:
-                    print(f"Hotend Temp: {self.extruder_temp} ==> {temperature}")
+                while self.state.extruder_temp < temperature - 2 or self.state.extruder_temp > temperature + 2:
+                    print(f"Hotend Temp: {self.state.extruder_temp} ==> {temperature}")
                     time.sleep(2)
-                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+                print(f"Hotend Temp: {self.state.extruder_temp} == {temperature}")
             elif state == "more":
-                while self.extruder_temp < temperature - 2:
-                    print(f"Hotend Temp: {self.extruder_temp} < {temperature}")
+                while self.state.extruder_temp < temperature - 2:
+                    print(f"Hotend Temp: {self.state.extruder_temp} < {temperature}")
                     time.sleep(2)
-                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+                print(f"Hotend Temp: {self.state.extruder_temp} == {temperature}")
             elif state == "less":
-                while self.extruder_temp > temperature + 2:
-                    print(f"Hotend Temp: {self.extruder_temp} > {temperature}")
+                while self.state.extruder_temp > temperature + 2:
+                    print(f"Hotend Temp: {self.state.extruder_temp} > {temperature}")
                     time.sleep(2)
-                print(f"Hotend Temp: {self.extruder_temp} == {temperature}")
+                print(f"Hotend Temp: {self.state.extruder_temp} == {temperature}")
     
     def set_bed_temperature(self, temperature, white=False, state="exect"):
         """
@@ -157,25 +164,25 @@ class printer:
         """
         self.send_qcode(f"M140 S{temperature}")
         print(f"Bed Temp set to: {temperature}")
-        while self.bed_temp == None:
+        while self.state.bed_temp == None:
             print("Whating to recive temperature!")
             time.sleep(2)
         if white:
             if state == "exect":
-                while self.bed_temp < temperature - 2 or self.bed_temp > temperature + 2:
-                    print(f"Bed Temp: {self.bed_temp} ==> {temperature}")
+                while self.state.bed_temp < temperature - 2 or self.state.bed_temp > temperature + 2:
+                    print(f"Bed Temp: {self.state.bed_temp} ==> {temperature}")
                     time.sleep(2)
-                print(f"Bed Temp: {self.bed_temp} == {temperature}")
+                print(f"Bed Temp: {self.state.bed_temp} == {temperature}")
             elif state == "more":
-                while self.bed_temp < temperature - 2:
-                    print(f"Bed Temp: {self.bed_temp} < {temperature}")
+                while self.state.bed_temp < temperature - 2:
+                    print(f"Bed Temp: {self.state.bed_temp} < {temperature}")
                     time.sleep(2)
-                print(f"Bed Temp: {self.bed_temp} == {temperature}")
+                print(f"Bed Temp: {self.state.bed_temp} == {temperature}")
             elif state == "less":
-                while self.bed_temp > temperature + 2:
-                    print(f"Bed Temp: {self.bed_temp} > {temperature}")
+                while self.state.bed_temp > temperature + 2:
+                    print(f"Bed Temp: {self.state.bed_temp} > {temperature}")
                     time.sleep(2)
-                print(f"Bed Temp: {self.bed_temp} == {temperature}")
+                print(f"Bed Temp: {self.state.bed_temp} == {temperature}")
 
     def light(self, state = "on"):
         command_dict = {
@@ -229,6 +236,15 @@ class printer:
         }
         self.client.publish(self.topic, json.dumps(command_dict))
         time.sleep(0.1)
+    
+    def cooling_fan(self, speed):
+        self.send_qcode(f"M106 P1 S{speed}")
+    
+    def aux_fan(self, speed):
+        self.send_qcode(f"M106 P2 S{speed}")
+    
+    def chamber_fan(self, speed):
+        self.send_qcode(f"M106 P3 S{speed}")
 
     def home(self):
         self.send_qcode("G28")
