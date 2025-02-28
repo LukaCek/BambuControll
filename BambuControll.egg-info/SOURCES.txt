@@ -7,3 +7,4 @@ BambuControll.egg-info/requires.txt
 BambuControll.egg-info/top_level.txt
 bambucontroll/__init__.py
 bambucontroll/printer.py
+bambucontroll/push.gcode

@@ -7,13 +7,14 @@ with open('README.md', 'r') as f:
 # Setting up
 setup(
     name="BambuControll",
-    version='0.0.2',
+    version='0.0.4',
     author="CekLuka",
     author_email="jaz@cekluka.com",
     description=DESCRIPTION,
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
+    package_data={'bambucontroll': ['*.gcode']},
     install_requires=["paho-mqtt"],
     keywords=['python', 'Bambu', '3D printer', 'MQTT', 'Printer avtomation'],
     classifiers=[

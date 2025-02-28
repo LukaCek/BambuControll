@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: BambuControll
-Version: 0.0.2
+Version: 0.0.4
 Summary: Python package for controlling Bambu Lab 3D printers (P1 and A1 series) via MQTT
 Home-page: UNKNOWN
 Author: CekLuka
@@ -33,9 +33,10 @@ from bambucontroll import Printer
 
 # Connect to printer
 printer = Printer(
-    ip_address="192.168.1.100",
+    ip="192.168.1.100",
     printer_id="01P00A000000000",
-    access_code="12341234")
+    password="12341234"
+    )
 
 # Get current status
 status = printer.state.printer_data
@@ -56,4 +57,5 @@ printer.start_print("test.gcode.3mf")
 
 ## License
 MIT
+
 
