@@ -3,11 +3,11 @@ import time
 
 printer = printer(
     ip="192.168.1.244",
-    printer_id="01P00A000000000",
+    printer_id="01P00A392200553",
     password="24661618"
 )
-#printer.debug = True
-#printer.home()
+printer.debug = True
+printer.home()
 
 while True:
     i = int(input("colling fan speed: "))
