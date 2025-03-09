@@ -84,7 +84,7 @@ class printer:
         self.state.first_message_received = True
 
         if self.debug:
-            print(f"### Recived from printer: {data}")
+            print(f"### Received from printer: {data}")
     
     
     def _connect_printer(self, port: int):
@@ -99,16 +99,107 @@ class printer:
     ################## Printer functions ##################
     ################## Printer functions ##################
 
-    def push(self, filename = "push.gcode", under_temperature = 30):
+    def push(self, filename = "default", under_temperature = 30, object_hight = 256, push_every = 40):
+        object_hight = int(object_hight)
         self.set_bed_temperature(under_temperature, white=True, state="less")
         self.set_bed_temperature(0)
-        with open(filename, "r") as file:
-            for line in file:
-                if line.strip() == "done":
-                    break
-                print(f"Sending: {line.strip()}")
-                self.send_qcode(line)
-        time.sleep(100)
+
+        # Check if object_hight is valid
+        if object_hight > 256: object_hight = 256
+        if object_hight < 0: object_hight = 0
+
+        print("/////////////////// STARTING PUSHING ///////////////////")
+        print(time.strftime("%H:%M:%S", time.localtime()))
+
+        if filename == "default":
+            # loop trough the object hight (from the top to the bottom)
+            while True:
+                # Calculate pushing hight
+                while True:
+                    if (object_hight % push_every) == 0: break
+                    object_hight -= 1
+                print(f"Pushing object hight: {object_hight}")
+                
+                if object_hight == 0: object_hight = 0.8
+
+                push_gcode = f"""
+G1 X1
+G1 Z{object_hight} F4000
+G1 Y0
+G1 Y251
+
+G1 X50
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X100
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X150
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X256
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X206
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X150
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+G1 X100
+G1 Z{object_hight}
+G1 Y0
+G1 Y251
+
+M220 S100  ; Reset feedrate magnitude
+M201.2 K1.0 ; Reset acc magnitude
+M73.2   R1.0 ;Reset left time magnitude
+M1002 set_gcode_claim_speed_level : 0
+
+M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
+"""
+                
+                # Send the gcode
+                for line in push_gcode.splitlines():
+                    if line.strip() == "done":
+                        break
+                    print(f"Sending: {line.strip()}")
+                    self.send_qcode(line)
+                
+                # Go to the next hight
+                object_hight -= 1
+                
+                time.sleep(60)
+                # Check if we are done
+                if object_hight <= 1: break
+                
+        else:
+            # Send the gcode file line by line
+            with open(filename, "r") as file:
+                for line in file:
+                    if line.strip() == "done":
+                        break
+                    print(f"Sending: {line.strip()}")
+                    self.send_qcode(line)
+            time.sleep(100)
+        print("/////////////////// ENDING PUSHING ///////////////////")
+        print(time.strftime("%H:%M:%S", time.localtime()))
+        printer.light("off")
+        while printer.state.light != "off":
+            print("/////////////////// ACTUALLY ENDING PUSHING ///////////////////")
+            print(time.strftime("%H:%M:%S", time.localtime()))
 
     def wait_to_finish(self):
         while self.state.task == 0:
@@ -134,7 +225,7 @@ class printer:
         self.send_qcode(f"M104 S{temperature}")
         print(f"Hotend Temp set to: {temperature}")
         while self.state.extruder_temp == None:
-            print("Whating to recive temperature!")
+            print("Waiting to receive temperature!")
             time.sleep(2)
         if white:
             if state == "exect":

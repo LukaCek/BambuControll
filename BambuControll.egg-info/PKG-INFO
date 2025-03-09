@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: BambuControll
-Version: 0.0.4
+Version: 0.0.5
 Summary: Python package for controlling Bambu Lab 3D printers (P1 and A1 series) via MQTT
 Home-page: UNKNOWN
 Author: CekLuka
