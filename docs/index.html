@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BambuControll Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>BambuControll Documentation</h1>
+
+    <section class="installation">
+        <h2>Installation</h2>
+        <pre><code>pip install bambucontroll</code></pre>
+    </section>
+
+    <section class="quick-start">
+        <h2>Quick Start</h2>
+        <pre><code>from bambucontroll import printer
+
+printer = printer(
+    ip="192.168.1.100",
+    printer_id="01P00A000000000",
+    password="12341234" # Allso known as "ACCESS CODE"
+)
+
+printer.home()</code></pre>
+    </section>
+
+    <section class="api-reference">
+        <h2>API Reference</h2>
+
+        <div class="api-method">
+            <h3>Printer Class</h3>
+            <p>Main class for connecting to Bambu Lab printers</p>
+            <pre><code>printer(ip: str, printer_id: str, password: str, port: int = 8883, 
+       client_id: str = "BambuControll", username: str = "bblp")</code></pre>
+            <pre><code># Initialize printer connection
+printer = printer(
+    ip="192.168.1.100",
+    printer_id="YOUR_PRINTER_ID",
+    password="YOUR_PASSWORD" # Allso known as "ACCESS CODE"
+)</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>home()</h3>
+            <p>Home all axes</p>
+            <pre><code>printer.home()</code></pre>
+            <pre><code># Home printer
+printer.home()</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>cooling_fan(speed)</h3>
+            <p>Control cooling fan speed</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>speed</td>
+                    <td>int</td>
+                    <td>Fan speed (0-255)</td>
+                </tr>
+            </table>
+            <pre><code># Set cooling fan to 100%
+printer.cooling_fan(255)</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>chamber_fan(speed)</h3>
+            <p>Control chamber fan speed</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>speed</td>
+                    <td>int</td>
+                    <td>Fan speed (0-255)</td>
+                </tr>
+            </table>
+            <pre><code># Set chamber fan to 50%
+printer.chamber_fan(127)</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>aux_fan(speed)</h3>
+            <p>Control auxiliary fan speed</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>speed</td>
+                    <td>int</td>
+                    <td>Fan speed (0-255)</td>
+                </tr>
+            </table>
+            <pre><code># Set auxiliary fan to 25%
+printer.aux_fan(63)</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>set_extruder_temperature(temperature, wait=False, state="exect")</h3>
+            <p>Set extruder temperature</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>temperature</td>
+                    <td>int</td>
+                    <td>Target temperature</td>
+                </tr>
+                <tr>
+                    <td>wait</td>
+                    <td>bool<div style="color: gray;">(optional)</div></td>
+                    <td>It will wait for the temperature to be reached</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td>str<div style="color: gray;">(optional)</div></td>
+                    <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to "exect".</td>
+                </tr>
+            </table>
+            <pre><code># Set extruder to 210°C
+printer.set_extruder_temperature(210)
+
+# Set extruder to 210°C and wait for the temperature to be reached
+printer.set_extruder_temperature(210, wait=True)</code></pre>
+        </div>
+    </section>
+
+    <div class="api-method">
+        <h3>set_bed_temperature(temperature, wait=False, state="exect")</h3>
+        <p>Set bed temperature</p>
+        <table class="param-table">
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>temperature</td>
+                <td>int</td>
+                <td>Target temperature</td>
+            </tr>
+            <tr>
+                <td>wait</td>
+                <td>bool<div style="color: gray;">(optional)</div></td>
+                <td>It will wait for the temperature to be reached</td>
+            </tr>
+            <tr>
+                <td>state</td>
+                <td>str<div style="color: gray;">(optional)</div></td>
+                <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to "exect".</td>
+            </tr>
+        </table>
+        <pre><code># Set bed to 210°C
+printer.set_bed_temperature(210)
+
+# Set bed to 210°C and wait for the temperature to be reached
+printer.set_bed_temperature(210, wait=True)</code></pre>
+    </div>
+</section>
+
+<div class="api-method">
+    <h3>push(filename, under_temperature = 30) <div style="color: rgb(159, 67, 67);">[EXPERIMENTAL]</div></h3>
+    <p>Push parts of the printer</p>
+    <table class="param-table">
+        <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>filename</td>
+            <td>str<div style="color: gray;">(optional)</div></td>
+            <td>Name of the gcode file. Example: "push.gcode"</td>
+        </tr>
+        <tr>
+            <td>under_temperature</td>
+            <td>int<div style="color: gray;">(optional)</div></td>
+            <td>Wait for the bed to coll under this temperature. Defaults to 30°C</td>
+        </tr>
+    </table>
+    <pre><code># push the print with "defoult" when bed cools under 30°C
+printer.push()
+
+# push the print with "p.gcode" when bed cools under 50°C
+printer.push("p.gcode", 50)</code></pre>
+</div>
+
+<div class="api-method">
+    <h3>light(state = "on")</h3>
+    <p>Control the printer light</p>
+    <table class="param-table">
+        <tr>
+            <th>Parameter</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>state</td>
+            <td>str<div style="color: gray;">(optional)</div></td>
+            <td>light("on") or light() to turn the light on. Light("off") to turn it off</td>
+        </tr>
+    </table>
+    <pre><code># push the print with "defoult" when bed cools under 30°C
+printer.push()
+
+# push the print with "p.gcode" when bed cools under 50°C
+printer.push("p.gcode", 50)</code></pre>
+</div>
+
+    <section class="examples">
+        <h2>Examples</h2>
+        <div><h3>Fan Control Example</h3>
+            <pre><code>while True:
+    cooling = int(input("Cooling fan speed: "))
+    printer.cooling_fan(cooling)
+    
+    chamber = int(input("Chamber fan speed: "))
+    printer.chamber_fan(chamber)
+    
+    aux = int(input("Aux fan speed: "))
+    printer.aux_fan(aux)</code></pre>
+        </div>
+    </section>
+
+    <section class="troubleshooting">
+        <h2>Troubleshooting</h2>
+        <p>Ensure printer is connected to the network and credentials are correct.</p>
+        <p>Enable debug mode: <code>printer.debug = True</code></p>
+    </section>
+</body>
+
+</html>

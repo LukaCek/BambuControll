@@ -4,3 +4,4 @@ temp.json
 .pi
 build/
 *.egg-info/
+test.py
