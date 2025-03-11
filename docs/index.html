@@ -46,11 +46,90 @@ printer = printer(
         </div>
 
         <div class="api-method">
+            <h3>send_gcode(command)</h3>
+            <p>Send a G-code command</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>command</td>
+                    <td>str</td>
+                    <td>G-code command</td>
+                </tr>
+            </table>
+            <pre><code>printer.send_gcode("M104 S210")</code></pre>
+        </div>
+
+        <div class="api-method">
             <h3>home()</h3>
             <p>Home all axes</p>
             <pre><code>printer.home()</code></pre>
             <pre><code># Home printer
 printer.home()</code></pre>
+        </div>
+
+        <div class="api-method">
+            <h3>start_print(filename, plate = 1, use_ams=False, timelapse=False, flow_cali=False, bed_leveling=True,
+                layer_inspect=False, vibration_calibration=False)</h3>
+            <p>Start a print from <b>.gcode.3mf</b> file.</p>
+            <table class="param-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>filename</td>
+                    <td>str</td>
+                    <td>File name of the .gcode.3mf file on printer.</td>
+                </tr>
+                <tr>
+                    <td>plate</td>
+                    <td>int<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Plate number (default: 1)</td>
+                </tr>
+                <tr>
+                    <td>use_ams</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Use AMS (default: False)</td>
+                </tr>
+                <tr>
+                    <td>timelapse</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Record timelapse (default: False)</td>
+                </tr>
+                <tr>
+                    <td>flow_cali</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>(default: False)</td>
+                </tr>
+                <tr>
+                    <td>bed_leveling</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Do bed leveling (default: True)</td>
+                </tr>
+                <tr>
+                    <td>layer_inspect</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>(default: False)</td>
+                </tr>
+                <tr>
+                    <td>vibration_calibration</td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Do vibration calibration (default: False)</td>
+                </tr>
+            </table>
+            <pre><code>printer.start_print("file.gcode.3mf", plate=1, vibration_calibration=True)</code></pre>
         </div>
 
         <div class="api-method">
@@ -126,13 +205,16 @@ printer.aux_fan(63)</code></pre>
                 </tr>
                 <tr>
                     <td>wait</td>
-                    <td>bool<div style="color: gray;">(optional)</div></td>
+                    <td>bool<div style="color: gray;">(optional)</div>
+                    </td>
                     <td>It will wait for the temperature to be reached</td>
                 </tr>
                 <tr>
                     <td>state</td>
-                    <td>str<div style="color: gray;">(optional)</div></td>
-                    <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to "exect".</td>
+                    <td>str<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to
+                        "exect".</td>
                 </tr>
             </table>
             <pre><code># Set extruder to 210°C
@@ -159,13 +241,16 @@ printer.set_extruder_temperature(210, wait=True)</code></pre>
             </tr>
             <tr>
                 <td>wait</td>
-                <td>bool<div style="color: gray;">(optional)</div></td>
+                <td>bool<div style="color: gray;">(optional)</div>
+                </td>
                 <td>It will wait for the temperature to be reached</td>
             </tr>
             <tr>
                 <td>state</td>
-                <td>str<div style="color: gray;">(optional)</div></td>
-                <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to "exect".</td>
+                <td>str<div style="color: gray;">(optional)</div>
+                </td>
+                <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to
+                    "exect".</td>
             </tr>
         </table>
         <pre><code># Set bed to 210°C
@@ -174,60 +259,79 @@ printer.set_bed_temperature(210)
 # Set bed to 210°C and wait for the temperature to be reached
 printer.set_bed_temperature(210, wait=True)</code></pre>
     </div>
-</section>
+    </section>
 
-<div class="api-method">
-    <h3>push(filename, under_temperature = 30) <div style="color: rgb(159, 67, 67);">[EXPERIMENTAL]</div></h3>
-    <p>Push parts of the printer</p>
-    <table class="param-table">
-        <tr>
-            <th>Parameter</th>
-            <th>Type</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>filename</td>
-            <td>str<div style="color: gray;">(optional)</div></td>
-            <td>Name of the gcode file. Example: "push.gcode"</td>
-        </tr>
-        <tr>
-            <td>under_temperature</td>
-            <td>int<div style="color: gray;">(optional)</div></td>
-            <td>Wait for the bed to coll under this temperature. Defaults to 30°C</td>
-        </tr>
-    </table>
-    <pre><code># push the print with "defoult" when bed cools under 30°C
+    <div class="api-method">
+        <h3>push(filename, under_temperature = 30, object_hight = 256, push_every = 40) <div
+                style="color: rgb(159, 67, 67);">[EXPERIMENTAL]</div>
+        </h3>
+        <p>Push parts of the printer</p>
+        <table class="param-table">
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>filename</td>
+                <td>str<div style="color: gray;">(optional)</div>
+                </td>
+                <td>Name of the gcode file. Example: "push.gcode"</td>
+            </tr>
+            <tr>
+                <td>under_temperature</td>
+                <td>int<div style="color: gray;">(optional)</div>
+                </td>
+                <td>Wait for the bed to coll under this temperature. Defaults to 30°C</td>
+            </tr>
+            <tr>
+                <td>object_hight</td>
+                <td>int<div style="color: gray;">(optional)</div>
+                </td>
+                <td>Set the height of the object. Defaults to 256mm. If there are more than one object select the
+                    highest one.</td>
+            </tr>
+            <tr>
+                <td>push_every</td>
+                <td>int<div style="color: gray;">(optional)</div>
+                </td>
+                <td>Push every this many mm. Defaults to 40mm</td>
+            </tr>
+        </table>
+        <pre><code># push the print with "defoult" when bed cools under 30°C
+printer.push()
+
+# push the print with "p.gcode" when bed cools under 50°C
+printer.push("p.gcode", under_temperature=28, object_hight=56.3, push_every=20)</code></pre>
+    </div>
+
+    <div class="api-method">
+        <h3>light(state = "on")</h3>
+        <p>Control the printer light</p>
+        <table class="param-table">
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>state</td>
+                <td>str<div style="color: gray;">(optional)</div>
+                </td>
+                <td>light("on") or light() to turn the light on. Light("off") to turn it off</td>
+            </tr>
+        </table>
+        <pre><code># push the print with "defoult" when bed cools under 30°C
 printer.push()
 
 # push the print with "p.gcode" when bed cools under 50°C
 printer.push("p.gcode", 50)</code></pre>
-</div>
-
-<div class="api-method">
-    <h3>light(state = "on")</h3>
-    <p>Control the printer light</p>
-    <table class="param-table">
-        <tr>
-            <th>Parameter</th>
-            <th>Type</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>state</td>
-            <td>str<div style="color: gray;">(optional)</div></td>
-            <td>light("on") or light() to turn the light on. Light("off") to turn it off</td>
-        </tr>
-    </table>
-    <pre><code># push the print with "defoult" when bed cools under 30°C
-printer.push()
-
-# push the print with "p.gcode" when bed cools under 50°C
-printer.push("p.gcode", 50)</code></pre>
-</div>
+    </div>
 
     <section class="examples">
         <h2>Examples</h2>
-        <div><h3>Fan Control Example</h3>
+        <div>
+            <h3>Fan Control Example</h3>
             <pre><code>while True:
     cooling = int(input("Cooling fan speed: "))
     printer.cooling_fan(cooling)
@@ -243,7 +347,7 @@ printer.push("p.gcode", 50)</code></pre>
     <section class="troubleshooting">
         <h2>Troubleshooting</h2>
         <p>Ensure printer is connected to the network and credentials are correct.</p>
-        <p>Enable debug mode: <code>printer.debug = True</code></p>
+        <p>Enable debug mode: <code>printer.debug = True</code> this will print all messages on printers MQTTs server.</p>
     </section>
 </body>
 

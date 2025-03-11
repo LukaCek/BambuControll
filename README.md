@@ -1,8 +1,11 @@
 # BambuControll
 
+[Full documentation](https://lukacek.github.io/BambuControll/). Also available on [PyPI](https://pypi.org/project/bambucontroll/).
+
 Python package for controlling Bambu Lab 3D printers (P1 and A1 series) via MQTT
 
 ## Installation
+Library is available on [PyPI](https://pypi.org/project/bambucontroll/) so you can install it with:
 
 ```bash
 pip install bambucontroll
@@ -27,6 +30,7 @@ print(status)
 # Start print job
 printer.start_print("test.gcode.3mf")
 ```
+For more information, see the [full documentation](https://lukacek.github.io/BambuControll/).
 
 ## Features
 - Real-time printer status monitoring

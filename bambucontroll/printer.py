@@ -176,7 +176,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
                     if line.strip() == "done":
                         break
                     print(f"Sending: {line.strip()}")
-                    self.send_qcode(line)
+                    self.send_gcode(line)
                 
                 # Go to the next hight
                 object_hight -= 1
@@ -192,7 +192,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
                     if line.strip() == "done":
                         break
                     print(f"Sending: {line.strip()}")
-                    self.send_qcode(line)
+                    self.send_gcode(line)
             time.sleep(100)
         print("/////////////////// ENDING PUSHING ///////////////////")
         print(time.strftime("%H:%M:%S", time.localtime()))
@@ -222,7 +222,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
             white (bool, optional): If True, wait until the actual temperature is within 2 degrees of the target temperature. Defaults to False.
             state (str, optional): The state to wait for. Can be "exect", "more", or "less". Defaults to "exect".
         """
-        self.send_qcode(f"M104 S{temperature}")
+        self.send_gcode(f"M104 S{temperature}")
         print(f"Hotend Temp set to: {temperature}")
         while self.state.extruder_temp == None:
             print("Waiting to receive temperature!")
@@ -253,7 +253,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
             white (bool, optional): If True, wait until the actual temperature is within 2 degrees of the target temperature. Defaults to False.
             state (str, optional): The state to wait for. Can be "exect", "more", or "less". Defaults to "exect".
         """
-        self.send_qcode(f"M140 S{temperature}")
+        self.send_gcode(f"M140 S{temperature}")
         print(f"Bed Temp set to: {temperature}")
         while self.state.bed_temp == None:
             print("Whating to recive temperature!")
@@ -292,14 +292,14 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
 
     def background(self):
         self.light("on")
-        self.send_qcode("M17 X0.3 Y0.3")
-        self.send_qcode("G1 X230 F400")
-        self.send_qcode("G1 Y40")
-        self.send_qcode("G1 X40")
-        self.send_qcode("G1 Y230")
-        self.send_qcode("M17 X1 Y1 Z1")
+        self.send_gcode("M17 X0.3 Y0.3")
+        self.send_gcode("G1 X230 F400")
+        self.send_gcode("G1 Y40")
+        self.send_gcode("G1 X40")
+        self.send_gcode("G1 Y230")
+        self.send_gcode("M17 X1 Y1 Z1")
 
-    def send_qcode(self, command):
+    def send_gcode(self, command):
         command_dict = {
             "print": {
                 "command": "gcode_line",
@@ -310,7 +310,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
         self.client.publish(self.topic, json.dumps(command_dict))
         time.sleep(0.1)
     
-    def start_print(self, filename, plate = 1, use_ams=False, timelapse=False, flow_cali=False, bed_leveling=False, layer_inspect=False, vibration_cali=False):
+    def start_print(self, filename, plate = 1, use_ams=False, timelapse=False, flow_cali=False, bed_leveling=True, layer_inspect=False, vibration_calibration=False):
         command_dict = {
             "print": {
             "command": "project_file",
@@ -322,20 +322,20 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
             "flow_cali": flow_cali,
             "bed_leveling": bed_leveling,
             "layer_inspect": layer_inspect,
-            "vibration_cali": vibration_cali
+            "vibration_cali": vibration_calibration
           }
         }
         self.client.publish(self.topic, json.dumps(command_dict))
         time.sleep(0.1)
     
     def cooling_fan(self, speed):
-        self.send_qcode(f"M106 P1 S{speed}")
+        self.send_gcode(f"M106 P1 S{speed}")
     
     def aux_fan(self, speed):
-        self.send_qcode(f"M106 P2 S{speed}")
+        self.send_gcode(f"M106 P2 S{speed}")
     
     def chamber_fan(self, speed):
-        self.send_qcode(f"M106 P3 S{speed}")
+        self.send_gcode(f"M106 P3 S{speed}")
 
     def home(self):
-        self.send_qcode("G28")
+        self.send_gcode("G28")

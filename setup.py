@@ -7,7 +7,7 @@ with open('README.md', 'r') as f:
 # Setting up
 setup(
     name="BambuControll",
-    version='0.0.5',
+    version='0.0.6',
     author="CekLuka",
     author_email="jaz@cekluka.com",
     description=DESCRIPTION,
