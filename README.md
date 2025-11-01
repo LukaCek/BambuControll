@@ -14,10 +14,10 @@ pip install bambucontroll
 ## Basic Usage
 
 ```python
-from bambucontroll import Printer
+from bambucontroll import printer
 
 # Connect to printer
-printer = Printer(
+printer = printer(
     ip="192.168.1.100",
     printer_id="01P00A000000000",
     password="12341234"
