@@ -23,7 +23,7 @@
 printer = printer(
     ip="192.168.1.100",
     printer_id="01P00A000000000",
-    password="12341234" # Allso known as "ACCESS CODE"
+    password="12341234" # Also known as "ACCESS CODE"
 )
 
 printer.home()</code></pre>
@@ -41,7 +41,7 @@ printer.home()</code></pre>
 printer = printer(
     ip="192.168.1.100",
     printer_id="YOUR_PRINTER_ID",
-    password="YOUR_PASSWORD" # Allso known as "ACCESS CODE"
+    password="YOUR_PASSWORD" # Also known as "ACCESS CODE"
 )</code></pre>
         </div>
 
@@ -213,7 +213,7 @@ printer.aux_fan(63)</code></pre>
                     <td>state</td>
                     <td>str<div style="color: gray;">(optional)</div>
                     </td>
-                    <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to
+                    <td>The state to wait for. Can be "exect" (exact), "more" or "less" than the target temperature. Defaults to
                         "exect".</td>
                 </tr>
             </table>
@@ -249,7 +249,7 @@ printer.set_extruder_temperature(210, wait=True)</code></pre>
                 <td>state</td>
                 <td>str<div style="color: gray;">(optional)</div>
                 </td>
-                <td>The state to wait for. Can be "exect", "more" or "less" then the target temperature. Defaults to
+                <td>The state to wait for. Can be "exect" (exact), "more" or "less" than the target temperature. Defaults to
                     "exect".</td>
             </tr>
         </table>
@@ -282,13 +282,13 @@ printer.set_bed_temperature(210, wait=True)</code></pre>
                 <td>under_temperature</td>
                 <td>int<div style="color: gray;">(optional)</div>
                 </td>
-                <td>Wait for the bed to coll under this temperature. Defaults to 30°C</td>
+                <td>Wait for the bed to cool under this temperature. Defaults to 30°C</td>
             </tr>
             <tr>
                 <td>object_hight</td>
                 <td>int<div style="color: gray;">(optional)</div>
                 </td>
-                <td>Set the height of the object. Defaults to 256mm. If there are more than one object select the
+                <td>Set the height of the object. Defaults to 256mm. If there is more than one object select the
                     highest one.</td>
             </tr>
             <tr>
@@ -298,10 +298,10 @@ printer.set_bed_temperature(210, wait=True)</code></pre>
                 <td>Push every this many mm. Defaults to 40mm</td>
             </tr>
         </table>
-        <pre><code># push the print with "defoult" when bed cools under 30°C
+        <pre><code># Push the print with "default" when the bed cools under 30°C
 printer.push()
 
-# push the print with "p.gcode" when bed cools under 50°C
+# Push the print with "p.gcode" when the bed cools under 50°C
 printer.push("p.gcode", under_temperature=28, object_hight=56.3, push_every=20)</code></pre>
     </div>
 
@@ -321,11 +321,11 @@ printer.push("p.gcode", under_temperature=28, object_hight=56.3, push_every=20)<
                 <td>light("on") or light() to turn the light on. Light("off") to turn it off</td>
             </tr>
         </table>
-        <pre><code># push the print with "defoult" when bed cools under 30°C
-printer.push()
+        <pre><code># Turn the light on
+printer.light()
 
-# push the print with "p.gcode" when bed cools under 50°C
-printer.push("p.gcode", 50)</code></pre>
+# Turn the light off
+printer.light("off")</code></pre>
     </div>
 
     <section class="examples">
