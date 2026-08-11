@@ -310,7 +310,15 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
         self.client.publish(self.topic, json.dumps(command_dict))
         time.sleep(0.1)
     
-    def start_print(self, filename, plate = 1, use_ams=False, timelapse=False, flow_cali=False, bed_leveling=True, layer_inspect=False, vibration_calibration=False):
+    def start_print(self, filename, plate = 1, use_ams=False, ams_slot=None, timelapse=False, flow_cali=False, bed_leveling=True, layer_inspect=False, vibration_calibration=False):
+
+        if ams_slot is not None:
+            if not use_ams:
+                raise ValueError("ams_slot can only be used if use_ams is True.")
+
+            if ams_slot not in (1, 2, 3, 4):
+                raise ValueError("Invalid AMS slot. Must be 1, 2, 3, or 4.")
+
         command_dict = {
             "print": {
             "command": "project_file",
@@ -325,6 +333,11 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
             "vibration_cali": vibration_calibration
           }
         }
+
+        if ams_slot is not None:
+            slot_id = ams_slot - 1
+            command_dict["print"]["ams_mapping"] = [slot_id]
+
         self.client.publish(self.topic, json.dumps(command_dict))
         time.sleep(0.1)
     

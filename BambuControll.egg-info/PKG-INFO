@@ -1,13 +1,10 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: BambuControll
-Version: 0.0.6
+Version: 0.0.7
 Summary: Python package for controlling Bambu Lab 3D printers (P1 and A1 series) via MQTT
-Home-page: UNKNOWN
 Author: CekLuka
 Author-email: jaz@cekluka.com
-License: UNKNOWN
 Keywords: python,Bambu,3D printer,MQTT,Printer avtomation
-Platform: UNKNOWN
 Classifier: Development Status :: 1 - Planning
 Classifier: Intended Audience :: Developers
 Classifier: Programming Language :: Python :: 3
@@ -15,6 +12,15 @@ Classifier: Operating System :: Unix
 Classifier: Operating System :: MacOS :: MacOS X
 Classifier: Operating System :: Microsoft :: Windows
 Description-Content-Type: text/markdown
+Requires-Dist: paho-mqtt
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: keywords
+Dynamic: requires-dist
+Dynamic: summary
 
 # BambuControll
 
@@ -32,10 +38,10 @@ pip install bambucontroll
 ## Basic Usage
 
 ```python
-from bambucontroll import Printer
+from bambucontroll import printer
 
 # Connect to printer
-printer = Printer(
+printer = printer(
     ip="192.168.1.100",
     printer_id="01P00A000000000",
     password="12341234"
@@ -61,5 +67,3 @@ For more information, see the [full documentation](https://lukacek.github.io/Bam
 
 ## License
 MIT
-
-

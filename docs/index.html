@@ -72,7 +72,7 @@ printer.home()</code></pre>
         </div>
 
         <div class="api-method">
-            <h3>start_print(filename, plate = 1, use_ams=False, timelapse=False, flow_cali=False, bed_leveling=True,
+            <h3>start_print(filename, plate = 1, use_ams=False, ams_slot=None, timelapse=False, flow_cali=False, bed_leveling=True,
                 layer_inspect=False, vibration_calibration=False)</h3>
             <p>Start a print from <b>.gcode.3mf</b> file.</p>
             <table class="param-table">
@@ -97,6 +97,12 @@ printer.home()</code></pre>
                     <td>bool<div style="color: gray;">(optional)</div>
                     </td>
                     <td>Use AMS (default: False)</td>
+                </tr>
+                <tr>
+                    <td>ams_slot</td>
+                    <td>int<div style="color: gray;">(optional)</div>
+                    </td>
+                    <td>Physical AMS slot to use (1-4). Requires use_ams=True. (default: None)</td>
                 </tr>
                 <tr>
                     <td>timelapse</td>
@@ -130,6 +136,7 @@ printer.home()</code></pre>
                 </tr>
             </table>
             <pre><code>printer.start_print("file.gcode.3mf", plate=1, vibration_calibration=True)</code></pre>
+            <pre><code>printer.start_print("file.gcode.3mf", plate=1, use_ams=True, ams_slot=2, vibration_calibration=True)</code></pre>
         </div>
 
         <div class="api-method">
